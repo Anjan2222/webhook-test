@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>GitHub Webhook Events</title>
+    <style>
+        body { font-family: sans-serif; margin: 2em; background: #f7f7f7; }
+        h2 { color: #333; }
+        .event { margin-bottom: 1em; padding: 1em; background: #fff; border-radius: 8px; box-shadow: 0 2px 4px #0001;}
+    </style>
+</head>
+<body>
+    <h2>Latest GitHub Events</h2>
+    <div id="events"></div>
+    <script>
+        function renderEvent(event) {
+            if (event.type === "push") {
+                return `<div class="event"><b>${event.author}</b> pushed to <b>${event.to_branch}</b> on <b>${event.timestamp}</b></div>`;
+            } else if (event.type === "pull_request") {
+                return `<div class="event"><b>${event.author}</b> submitted a pull request from <b>${event.from_branch}</b> to <b>${event.to_branch}</b> on <b>${event.timestamp}</b></div>`;
+            } else if (event.type === "merge") {
+                return `<div class="event"><b>${event.author}</b> merged branch <b>${event.from_branch}</b> to <b>${event.to_branch}</b> on <b>${event.timestamp}</b></div>`;
+            }
+            return "";
+        }
+        function fetchEvents() {
+            fetch('/events')
+                .then(res => res.json())
+                .then(data => {
+                    document.getElementById('events').innerHTML = data.map(renderEvent).join('');
+                });
+        }
+        fetchEvents();
+        setInterval(fetchEvents, 15000);
+    </script>
+</body>
+</html>
